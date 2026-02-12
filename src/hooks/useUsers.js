@@ -55,17 +55,11 @@ export function useUsers(type, companies) {
 
     if (type === "sales-manager") {
       const userRole = user?.role?.toUpperCase();
-      const adminBaseUrl = `${
-        import.meta.env.VITE_BASE_URL
-      }/api/v1/user/admin/all/sales-manager`;
 
       if (userRole === "SUPERADMIN") {
-        fetchUrl = `${adminBaseUrl}/0`;
-      } else if (userRole === "ROP") {
-        const compId = user?.companyId || user?.campanyId;
-        if (compId) {
-          fetchUrl = `${adminBaseUrl}/${compId}`;
-        }
+        fetchUrl = `${
+          import.meta.env.VITE_BASE_URL
+        }/api/v1/user/admin/all/sales-manager/0`;
       }
     }
 
@@ -76,10 +70,28 @@ export function useUsers(type, companies) {
 
       if (req.ok) {
         const data = await req.json();
-        const list = data.safeUsers || data.users || data.data || [];
+
+        let list = [];
+
+        if (Array.isArray(data)) {
+          list = data;
+        } else if (Array.isArray(data.users)) {
+          list = data.users;
+        } else if (Array.isArray(data.safeUsers)) {
+          list = data.safeUsers;
+        } else if (Array.isArray(data.data)) {
+          list = data.data;
+        } else if (Array.isArray(data[config.nameKey])) {
+          list = data[config.nameKey];
+        }
+
         setUsers(list);
       } else {
-        setError("Ma'lumotlarni yuklashda xatolik! Sahifani yangilang.");
+        if (req.status === 403) {
+          setError("Sizda bu ma'lumotlarni ko'rish uchun ruxsat yo'q (403).");
+        } else {
+          setError("Ma'lumotlarni yuklashda xatolik! Sahifani yangilang.");
+        }
       }
     } catch (err) {
       console.error(err);
@@ -87,7 +99,7 @@ export function useUsers(type, companies) {
     } finally {
       setLoading((prev) => ({ ...prev, get: false }));
     }
-  }, [type, user, token, config.read]);
+  }, [type, user, token, config.read, config.nameKey]);
 
   const addUser = useCallback(
     async (data, onSuccess) => {
