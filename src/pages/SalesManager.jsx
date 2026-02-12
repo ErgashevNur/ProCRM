@@ -1,5 +1,5 @@
-import UserManagement from "@/components/UserManagement";
+import UserManagement from "../components/UserManagement";
 
-export default function Rop() {
-  return <UserManagement type="rop" title="Boshqaruvchilar" />;
+export default function SalesManager() {
+  return <UserManagement type="sales-manager" title="Sotuv operatorlari" />;
 }
