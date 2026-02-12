@@ -45,6 +45,14 @@ export default function Company() {
     return () => clearTimeout(timeout);
   }, [search, getCompanies]);
 
+  useEffect(() => {
+    return () => {
+      if (imagePreview) {
+        URL.revokeObjectURL(imagePreview);
+      }
+    };
+  }, [imagePreview]);
+
   const handleOpenAdd = () => {
     setImagePreview(null);
     setSelectedFile(null);
@@ -75,7 +83,6 @@ export default function Company() {
   const handleSubmit = (e) => {
     e.preventDefault();
     const form = e.currentTarget;
-
     const rawData = getFormData(form);
 
     const descriptionValue =

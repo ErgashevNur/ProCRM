@@ -252,10 +252,16 @@ export default function CompanyDetails() {
           </p>
         </div>
         <div className="flex gap-3">
-          <Button variant="outline" onClick={() => navigate("/company")}>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => navigate("/company")}
+          >
             Orqaga
           </Button>
-          <Button onClick={() => fetchCompany(true)}>Qayta urinish</Button>
+          <Button type="button" onClick={() => fetchCompany(true)}>
+            Qayta urinish
+          </Button>
         </div>
       </div>
     );
@@ -268,7 +274,11 @@ export default function CompanyDetails() {
           <AlertCircle className="w-10 h-10 text-muted-foreground" />
         </div>
         <h2 className="text-2xl font-bold">Ma'lumot topilmadi</h2>
-        <Button variant="outline" onClick={() => navigate("/company")}>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => navigate("/company")}
+        >
           <ArrowLeft className="w-4 h-4 mr-2" /> Ro'yxatga qaytish
         </Button>
       </div>
@@ -280,6 +290,7 @@ export default function CompanyDetails() {
       <div className="bg-card border-b border-border sticky top-0 z-20">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
           <Button
+            type="button"
             variant="ghost"
             className="gap-2 hover:bg-muted"
             onClick={() => navigate("/company")}
@@ -348,6 +359,7 @@ export default function CompanyDetails() {
 
             <div className="flex flex-wrap items-center gap-3 pt-2">
               <Button
+                type="button"
                 onClick={() => setStatusOpen(true)}
                 variant="outline"
                 className={`h-11 px-6 rounded-xl border-border shadow-sm ${
@@ -361,6 +373,7 @@ export default function CompanyDetails() {
               </Button>
 
               <Button
+                type="button"
                 onClick={handleOpenEdit}
                 className="h-11 px-6 rounded-xl shadow-lg"
               >
@@ -368,6 +381,7 @@ export default function CompanyDetails() {
               </Button>
 
               <Button
+                type="button"
                 variant="destructive"
                 onClick={() => setDeleteOpen(true)}
                 className="h-11 px-6 rounded-xl shadow-none"
@@ -431,6 +445,7 @@ export default function CompanyDetails() {
             <div className="flex-none flex items-center justify-between px-6 py-4 border-b border-border bg-card">
               <DrawerClose asChild>
                 <Button
+                  type="button"
                   variant="ghost"
                   size="sm"
                   className="gap-2 text-muted-foreground hover:text-foreground"
@@ -593,6 +608,7 @@ export default function CompanyDetails() {
               Bekor qilish
             </AlertDialogCancel>
             <AlertDialogAction
+              type="button"
               onClick={handleDelete}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-xl h-11 px-6 shadow-lg"
               disabled={isDeleting}
@@ -624,6 +640,7 @@ export default function CompanyDetails() {
               Bekor qilish
             </AlertDialogCancel>
             <AlertDialogAction
+              type="button"
               onClick={handleStatusConfirm}
               className={`text-white rounded-xl h-11 px-6 shadow-lg ${
                 company.status

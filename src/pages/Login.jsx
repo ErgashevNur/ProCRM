@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAppStore } from "@/store/useUserStore";
 import { getFormData } from "@/lib/utils";
 import { RefreshCw, Eye, EyeOff, Mail, Lock } from "lucide-react";
@@ -16,9 +17,16 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 
 export default function Login() {
-  const { setUser } = useAppStore();
+  const { user, setUser } = useAppStore();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      navigate("/");
+    }
+  }, [user, navigate]);
 
   async function login(userData) {
     setLoading(true);
@@ -41,6 +49,7 @@ export default function Login() {
         toast.success("Tizimga muvaffaqiyatli kirdingiz!", {
           description: "Xush kelibsiz, ishlarni davom ettirishingiz mumkin.",
         });
+        navigate("/");
       } else if (req.status === 404 || req.status === 400) {
         const errorData = await req.json().catch(() => ({}));
         if (errorData?.message?.includes("not active")) {
