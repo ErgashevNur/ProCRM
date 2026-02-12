@@ -49,10 +49,19 @@ export function useUsers(type, companies) {
     setLoading((prev) => ({ ...prev, get: true }));
     let fetchUrl = import.meta.env.VITE_BASE_URL + config.read;
 
-    if (user?.role === "SUPERADMIN" && type === "sales-manager") {
-      fetchUrl = `${
-        import.meta.env.VITE_BASE_URL
-      }/api/v1/user/admin/all/sales-manager/0`;
+    if (type === "sales-manager") {
+      if (user?.role === "SUPERADMIN") {
+        fetchUrl = `${
+          import.meta.env.VITE_BASE_URL
+        }/api/v1/user/admin/all/sales-manager/0`;
+      } else if (user?.role === "ROP") {
+        const compId = user.companyId || user.campanyId;
+        if (compId) {
+          fetchUrl = `${
+            import.meta.env.VITE_BASE_URL
+          }/api/v1/user/admin/all/sales-manager/${compId}`;
+        }
+      }
     }
 
     try {
@@ -75,7 +84,7 @@ export function useUsers(type, companies) {
     } finally {
       setLoading((prev) => ({ ...prev, get: false }));
     }
-  }, [type, user?.role, token, config.read]);
+  }, [type, user?.role, user?.companyId, user?.campanyId, token, config.read]);
 
   const addUser = useCallback(
     async (data, onSuccess) => {
