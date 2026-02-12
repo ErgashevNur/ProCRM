@@ -22,7 +22,7 @@ const API_CONFIG = {
 export function useUsers(type, companies) {
   const config = API_CONFIG[type];
   const { user } = useAppStore();
-  const token = localStorage.getItem("accessToken");
+  const token = localStorage.getItem("accessToken") || user?.accessToken;
 
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState("");
@@ -44,22 +44,27 @@ export function useUsers(type, companies) {
   }, [search]);
 
   const getUsers = useCallback(async () => {
-    if (!token) return;
+    if (!token) {
+      setLoading((prev) => ({ ...prev, get: false }));
+      return;
+    }
 
     setLoading((prev) => ({ ...prev, get: true }));
+
     let fetchUrl = import.meta.env.VITE_BASE_URL + config.read;
 
     if (type === "sales-manager") {
-      if (user?.role === "SUPERADMIN") {
-        fetchUrl = `${
-          import.meta.env.VITE_BASE_URL
-        }/api/v1/user/admin/all/sales-manager/0`;
-      } else if (user?.role === "ROP") {
-        const compId = user.companyId || user.campanyId;
+      const userRole = user?.role?.toUpperCase();
+      const adminBaseUrl = `${
+        import.meta.env.VITE_BASE_URL
+      }/api/v1/user/admin/all/sales-manager`;
+
+      if (userRole === "SUPERADMIN") {
+        fetchUrl = `${adminBaseUrl}/0`;
+      } else if (userRole === "ROP") {
+        const compId = user?.companyId || user?.campanyId;
         if (compId) {
-          fetchUrl = `${
-            import.meta.env.VITE_BASE_URL
-          }/api/v1/user/admin/all/sales-manager/${compId}`;
+          fetchUrl = `${adminBaseUrl}/${compId}`;
         }
       }
     }
@@ -74,17 +79,15 @@ export function useUsers(type, companies) {
         const list = data.safeUsers || data.users || data.data || [];
         setUsers(list);
       } else {
-        setError(
-          "⚠️ Ma'lumotlarni yuklashda xatolik! Iltimos, sahifani yangilang."
-        );
+        setError("Ma'lumotlarni yuklashda xatolik! Sahifani yangilang.");
       }
     } catch (err) {
-      console.error("GetUsers Error:", err);
-      setError("⚠️ Server bilan aloqa yo'q. Internetni tekshiring.");
+      console.error(err);
+      setError("Server bilan aloqa yo'q.");
     } finally {
       setLoading((prev) => ({ ...prev, get: false }));
     }
-  }, [type, user?.role, user?.companyId, user?.campanyId, token, config.read]);
+  }, [type, user, token, config.read]);
 
   const addUser = useCallback(
     async (data, onSuccess) => {
@@ -130,7 +133,7 @@ export function useUsers(type, companies) {
           }
         }
       } catch (e) {
-        console.error("AddUser Error:", e);
+        console.error(e);
         toast.error("Serverga ulanib bo'lmadi!");
       } finally {
         setLoading((prev) => ({ ...prev, add: false }));
@@ -178,7 +181,7 @@ export function useUsers(type, companies) {
           }
         }
       } catch (e) {
-        console.error("EditUser Error:", e);
+        console.error(e);
         toast.error("Server bilan aloqa yo'q.");
       } finally {
         setLoading((prev) => ({ ...prev, edit: false }));
@@ -217,7 +220,7 @@ export function useUsers(type, companies) {
           }
         }
       } catch (e) {
-        console.log("RemoveUser Error:", e);
+        console.error(e);
         toast.error("Server bilan aloqa yo'q.");
       } finally {
         setLoading((prev) => ({ ...prev, remove: false }));

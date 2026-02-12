@@ -45,7 +45,14 @@ export default function Login() {
 
       if (req.status === 201) {
         const res = await req.json();
-        setUser(res.user);
+
+        const token = res.accessToken || res.user?.accessToken;
+        if (token) {
+          localStorage.setItem("accessToken", token);
+          localStorage.setItem("user", JSON.stringify(res));
+        }
+
+        setUser(res.user || res);
         toast.success("Tizimga muvaffaqiyatli kirdingiz!", {
           description: "Xush kelibsiz, ishlarni davom ettirishingiz mumkin.",
         });
@@ -69,7 +76,7 @@ export default function Login() {
         });
       }
     } catch (e) {
-      console.log(e);
+      console.error(e);
       toast.error("Server bilan aloqa yo'q!", {
         description:
           "Internet aloqasini tekshiring yoki tizim administratoriga murojaat qiling.",
